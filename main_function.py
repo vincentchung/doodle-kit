@@ -3,6 +3,8 @@ import imutils
 import cv2
 import thread
 import time
+#adding spport wemo
+import subprocess
 
 #declair global valuable
 cap = cv2.VideoCapture(0) #openCV camera device
@@ -15,6 +17,18 @@ vb_image=list()
 vb_area=list()
 #min area
 MINI_AREA=2000
+
+def wemo_switch(b):
+	if(b==0):
+		cmd='wemo switch "WeMo Switch" off'
+	else:
+		cmd='wemo switch "WeMo Switch" on'
+
+	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	for line in p.stdout.readlines():
+	    print line,
+	retval = p.wait()
+
 
 def camera_scaning():
 	ret, frame = cap.read()
@@ -41,7 +55,11 @@ def camera_scaning():
 		c = 0
 		for c in cnts:
 			if(cv2.contourArea(c)>1000):
-				print "touch!!!: " + repr(cv2.contourArea(c)) + "\n"
+				if(index==0):
+					wemo_switch(0)
+				else:
+					wemo_switch(1)
+				print "touch!!!: " +repr(index)+":"+ repr(cv2.contourArea(c)) + "\n"
 
 		index+=1
 		#print repr area
@@ -100,6 +118,7 @@ def camera_detect_vb():
 			vb_image.append(cropped)
 			vb_area.append((x, y, w, h))
 			cv2.rectangle(frame,(x,y),(x+w,y+h), (0, 255, 0), 2)
+			print "found area:"+repr(index)+" x:"+repr(x)+" y:"+repr(y)+" w:"+repr(w)+" h:"+repr(h)+"\n"
 			#if len(approx) == 3:
 			#	shape = "triangle"
 			#elif len(approx) == 4:
@@ -130,6 +149,7 @@ def camera_gesture_thread( threadName, delay):
 			mCommand= "s"
 		elif mCommand == "s":
 			camera_scaning()
+			time.sleep(.5)
 
 
 #main function
