@@ -17,6 +17,8 @@ vb_image=list()
 vb_area=list()
 #min area
 MINI_AREA=2000
+#limist area size w*h
+LIMIT_AREA_SIZE=200*200
 
 def wemo_switch(b):
 	if(b==0):
@@ -109,16 +111,20 @@ def camera_detect_vb():
 			peri = cv2.arcLength(c, True)
 			approx = cv2.approxPolyDP(c, 0.04 * peri, True)
 			(x, y, w, h) = cv2.boundingRect(approx)
+
+			#area is too big
+			if( w*h > LIMIT_AREA_SIZE ): continue
 			#crop image!!!!
 			cropped = frame[y:y+h,x:x+w].copy()
 			s="cropped_"+repr(index)+".jpg"
-			index+=1
-			print s + "\n"
+
+			print s +":"+repr(cv2.contourArea(c)) + "\n"
 			cv2.imwrite( s,cropped)
 			vb_image.append(cropped)
 			vb_area.append((x, y, w, h))
-			cv2.rectangle(frame,(x,y),(x+w,y+h), (0, 255, 0), 2)
+			#cv2.rectangle(frame,(x,y),(x+w,y+h), (0, 255, 0), 2)
 			print "found area:"+repr(index)+" x:"+repr(x)+" y:"+repr(y)+" w:"+repr(w)+" h:"+repr(h)+"\n"
+			index+=1
 			#if len(approx) == 3:
 			#	shape = "triangle"
 			#elif len(approx) == 4:
@@ -127,13 +133,25 @@ def camera_detect_vb():
 			#	shape = "circle"
 
 			#cv2.drawContours(frame, [c], -1, (0, 255, 0), 2)
-			#txt=shape+":"+repr(cv2.contourArea(c))
+			#txt=repr(index)+":"+repr(cv2.contourArea(c))
 			#cv2.putText(frame, txt, (cX, cY), cv2.FONT_HERSHEY_SIMPLEX,
 			#	0.5, (255, 255, 255), 2)
 
 		# show the output image
+	index=0
 	if mCapturing == "c":
-		cv2.imwrite( "output.jpg",frame)
+		for area in vb_area:
+			(x, y, w, h) = area
+			cv2.rectangle(frame,(x,y),(x+w,y+h), (0, 255, 0), 2)
+			cv2.drawContours(frame, [c], -1, (0, 255, 0), 2)
+			txt=repr(index)+":"+repr(cv2.contourArea(c))
+			cv2.putText(frame, txt, (x, x), cv2.FONT_HERSHEY_SIMPLEX,
+				0.5, (255, 255, 255), 2)
+			index+=1
+
+		ts = time.time()
+		str="leanring_vb_"+repr(ts)+".jpg"
+		cv2.imwrite( str,frame)
 		mCapturing="n"
 
 	if mCapturing == "d":
@@ -155,7 +173,7 @@ def camera_gesture_thread( threadName, delay):
 #main function
 if __name__ == "__main__":
 	print "starting..."
-	mCapturing="n"
+	mCapturing="c"
 	try:
 		thread.start_new_thread( camera_gesture_thread, ("Thread-1", 2, ) )
 	except:
