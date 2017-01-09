@@ -20,6 +20,78 @@ MINI_AREA=2000
 #limist area size w*h
 LIMIT_AREA_SIZE=200*200
 
+
+def DBread():
+    # Reading data back
+    data=''
+    with open('data.json', 'r') as f:
+        data = json.load(f)
+    return data
+
+class eventMap( object ):
+    def _jsonSupport( *args ):
+        def default( self, xObject ):
+            return { 'VB_id': xObject.VB_id(), 'skillkit_id': xObject.skillkit_id() }
+
+        def objectHook( obj ):
+            return skillkit( obj[ 'name' ],obj[ 'skilltype' ],obj[ 'press' ],obj[ 'release' ] )
+        json.JSONEncoder.default = default
+        json._default_decoder = json.JSONDecoder( object_hook = objectHook )
+
+    _jsonSupport()
+
+
+    def __init__( self, VB_id ,skillkit_id):
+        self._VB_id = VB_id
+        self._skillkit_id = skillkit_id
+
+    def VB_id( self ):
+        return self._VB_id
+    def skillkit_id( self ):
+        return self._skillkit_id
+
+    def __repr__( self ):
+        return '<skillkit(name=%s)>' % self._name
+
+class skillkit( object ):
+
+    def _jsonSupport( *args ):
+        def default( self, xObject ):
+            return { 'name': xObject.name(), 'skilltype': xObject.skilltype(),'press': xObject.press(),'release': xObject.release() }
+
+        def objectHook( obj ):
+            return skillkit( obj[ 'name' ],obj[ 'skilltype' ],obj[ 'press' ],obj[ 'release' ] )
+        json.JSONEncoder.default = default
+        json._default_decoder = json.JSONDecoder( object_hook = objectHook )
+
+    _jsonSupport()
+
+    def __init__( self, name ):
+        self._name = name
+
+    def __init__( self, name ,skilltype,press,release):
+        self._name = name
+        self._skilltype = skilltype
+        self._press = press
+        self._release = release
+
+    def name( self ):
+        return self._name
+    def skilltype( self ):
+        return self._skilltype
+    def press( self ):
+        return self._press
+    def release( self ):
+        return self._release
+
+    def __repr__( self ):
+        return '<skillkit(name=%s)>' % self._name
+
+def DBupdate(obj):
+    # Reading data back
+    with open('data.json', 'w') as f:
+        json.dump(obj, f)
+
 def wemo_switch(b):
 	if(b==0):
 		cmd='wemo switch "WeMo Switch" off'
@@ -30,6 +102,8 @@ def wemo_switch(b):
 	for line in p.stdout.readlines():
 	    print line,
 	retval = p.wait()
+
+def event_map(button_id):
 
 
 def camera_scaning():
@@ -173,6 +247,21 @@ def camera_gesture_thread( threadName, delay):
 #main function
 if __name__ == "__main__":
 	print "starting..."
+    eventobjs=list()
+    #skillobjs=DBread()
+    skillobjs=DBread()
+    #myObject = skillkit( 'test1','cmd','pressing','releasing')
+    #myObject2 = skillkit( 'test2','cmd','pressing','releasing')
+    skillobjs.append(myObject)
+    skillobjs.append(myObject2)
+    #DBupdate(skillobjs)
+
+    #init event mapping table
+    eventobj1 = eventMap( 0,0)
+    eventobj2 = eventMap( 1,1)
+    eventobjs.append(eventobj1)
+    eventobjs.append(eventobj2)
+
 	mCapturing="c"
 	try:
 		thread.start_new_thread( camera_gesture_thread, ("Thread-1", 2, ) )
