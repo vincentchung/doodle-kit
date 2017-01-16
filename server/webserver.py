@@ -6,9 +6,18 @@ import xml.etree.ElementTree as ET
 tree = ET.parse('user_data.xml')
 root = tree.getroot()
 
+#control interface
+#list skillkit
+#setup skillkit to vitrulButton
+#list vitrulButton
+#images//
+#get original full image / scan pattern of vitrulButton
+#each block image of vitrulButton
+
 urls = (
-    '/users', 'list_users',
-    '/users/(.*)', 'get_user',
+    '/skillkit', 'list_users',
+    '/vitrulButton', 'list_users',
+    '/vitrulButton/(.*)', 'get_user',
     '/images/(.*)', 'images' #this is where the image folder is located....
 )
 
