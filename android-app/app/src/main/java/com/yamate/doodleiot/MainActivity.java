@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Reloading....", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -61,7 +61,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        new DownloadImageTask((ImageView) findViewById(R.id.imageView1))
+        new DownloadImageTask((ImageView) findViewById(R.id.imageViewOriginal))
+                .execute("http://192.168.50.57:8080/images/original_1483976432-9347739.jpg");
+        new DownloadImageTask((ImageView) findViewById(R.id.imageViewScanResult))
                 .execute("https://vincentcwblog.files.wordpress.com/2017/01/leanring_vb_1483976717-676635.jpg?w=700&h=&crop=1");
 
         lv=(ListView) findViewById(R.id.listView);
@@ -79,31 +81,6 @@ public class MainActivity extends AppCompatActivity
             return null;
         }
     }
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -5,7 +5,7 @@
     android:orientation="horizontal" >
 
     <ImageView
-        android:id="@+id/imageView1"
+        android:id="@+id/imageViewtmp"
         android:layout_gravity="center"
         android:layout_width="48dp"
         android:layout_height="48dp" />

@@ -16,12 +16,16 @@ public class CustomAdapter extends BaseAdapter{
     String [] result;
     Context context;
     int [] imageId;
+    static final String temp_url="https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png?201701060751";
+    static final String temp_url2="https://tctechcrunch2011.files.wordpress.com/2014/06/apple_topic.png?w=220";
     private static LayoutInflater inflater=null;
     public CustomAdapter(MainActivity mainActivity, String[] prgmNameList, int[] prgmImages) {
         // TODO Auto-generated constructor stub
         result=prgmNameList;
         context=mainActivity;
+
         imageId=prgmImages;
+        //changing here to load URL from network
         inflater = ( LayoutInflater )context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -55,9 +59,9 @@ public class CustomAdapter extends BaseAdapter{
         View rowView;
         rowView = inflater.inflate(R.layout.imagelistview, null);
         holder.tv=(TextView) rowView.findViewById(R.id.textView1);
-        holder.img=(ImageView) rowView.findViewById(R.id.imageView1);
+        //holder.img=(ImageView) rowView.findViewById(R.id.imageView1);
         holder.tv.setText(result[position]);
-        holder.img.setImageResource(imageId[position]);
+        //holder.img.setImageResource(imageId[position]);
         rowView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,6 +69,19 @@ public class CustomAdapter extends BaseAdapter{
                 Toast.makeText(context, "You Clicked "+result[position], Toast.LENGTH_LONG).show();
             }
         });
+
+        if(position>5)
+        {
+            new DownloadImageTask((ImageView) rowView.findViewById(R.id.imageViewtmp))
+                    .execute(temp_url2);
+        }
+        else
+        {
+            new DownloadImageTask((ImageView) rowView.findViewById(R.id.imageViewtmp))
+                    .execute(temp_url);
+        }
+
+
         return rowView;
     }
 
