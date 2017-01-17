@@ -21,6 +21,8 @@ urls = (
     '/images/(.*)', 'images' #this is where the image folder is located....
 )
 
+
+
 app = web.application(urls, globals())
 class images:
     def GET(self,name):
