@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 import web
 import os
-import xml.etree.ElementTree as ET
-
-tree = ET.parse('user_data.xml')
-root = tree.getroot()
+import  json
 
 #control interface
 #list skillkit
@@ -22,6 +19,17 @@ urls = (
 )
 
 
+def DBread():
+    # Reading data back
+    data=''
+    with open('data.json', 'r') as f:
+        data = json.load(f)
+    return data
+
+def DBupdate(obj):
+    # Reading data back
+    with open('data.json', 'w') as f:
+        json.dump(obj, f)
 
 app = web.application(urls, globals())
 class images:
@@ -42,18 +50,13 @@ class images:
 
 class list_users:
     def GET(self):
-	output = 'users:[';
-	for child in root:
-                print 'child', child.tag, child.attrib
-                output += str(child.attrib) + ','
-	output += ']';
+	output = '[{"press": "pressing", "release": "releasing", "name": "test1", "skilltype": "cmd"}, {"press": "pressing", "release": "releasing", "name": "test2", "skilltype": "cmd"}, {"press": "pressing", "release": "releasing", "name": "test1", "skilltype": "cmd"}, {"press": "pressing", "release": "releasing", "name": "test2", "skilltype": "cmd"}]'
         return output
 
 class get_user:
     def GET(self, user):
-	for child in root:
-		if child.attrib['id'] == user:
-		    return str(child.attrib)
+        output=DBread()
+        return output
 
 if __name__ == "__main__":
     app.run()
