@@ -15,24 +15,43 @@ import android.widget.Toast;
 public class CustomAdapter extends BaseAdapter{
     String [] result;
     Context context;
-    int [] imageId;
-    static final String temp_url="https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png?201701060751";
-    static final String temp_url2="https://tctechcrunch2011.files.wordpress.com/2014/06/apple_topic.png?w=220";
+    String [] imageId;
     private static LayoutInflater inflater=null;
-    public CustomAdapter(MainActivity mainActivity, String[] prgmNameList, int[] prgmImages) {
+    public CustomAdapter(MainActivity mainActivity, String[] prgmNameList, String[] prgmImages) {
         // TODO Auto-generated constructor stub
         result=prgmNameList;
         context=mainActivity;
 
         imageId=prgmImages;
         //changing here to load URL from network
-        inflater = ( LayoutInflater )context.
-                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if(result!=null)
+        {
+            inflater = ( LayoutInflater )context.
+                    getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
     }
+
+    public void updateArraylist(String[] prgmNameList, String[] prgmImages)
+    {
+        result=prgmNameList;
+        imageId=prgmImages;
+
+        if(inflater==null)
+        {
+            inflater = ( LayoutInflater )context.
+                    getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
-        return result.length;
+        if(result!=null)
+            return result.length;
+        else
+            return 0;
     }
 
     @Override
@@ -70,16 +89,8 @@ public class CustomAdapter extends BaseAdapter{
             }
         });
 
-        if(position>5)
-        {
-            new DownloadImageTask((ImageView) rowView.findViewById(R.id.imageViewtmp))
-                    .execute(temp_url2);
-        }
-        else
-        {
-            new DownloadImageTask((ImageView) rowView.findViewById(R.id.imageViewtmp))
-                    .execute(temp_url);
-        }
+        new DownloadImageTask((ImageView) rowView.findViewById(R.id.imageViewtmp))
+                .execute(imageId[position]);
 
 
         return rowView;

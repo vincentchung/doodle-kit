@@ -9,6 +9,8 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.util.Log;
@@ -16,9 +18,11 @@ import android.util.Log;
 class JSONclient {
     static JSONObject jObj = null;
     static String json = "";
+    static JSONArray jsonArray=null;
+
     // constructor
     public JSONclient() {}
-    public JSONObject getJSONFromUrl(String temp_url) {
+    public JSONArray getJSONFromUrl(String temp_url) {
         HttpURLConnection conn = null;
         // Making HTTP request
         try {
@@ -49,14 +53,16 @@ class JSONclient {
         }
         // try parse the string to a JSON object
         try {
-            jObj = new JSONObject(json);
+            //jObj = new JSONObject(json);
+            jsonArray = new JSONArray(json);
+            //jObj=jsonArray.getJSONObject(0);
         } catch (JSONException e) {
             Log.e("JSON Parser", "getJSONFromUrl Error parsing data " + e.toString());
         }
-        return jObj;
+        return jsonArray;
     }
 
-    public JSONObject makeHttpRequest(String temp_url, String method, String urlParameters){
+    public String makeHttpRequest(String temp_url, String method, String urlParameters){
         HttpURLConnection conn = null;
         try{
             URL url =new URL(temp_url);
@@ -97,13 +103,19 @@ class JSONclient {
                 conn.disconnect();
             }
         }
+
+        return json;
+
         // try parse the string to a JSON object
+        /*
         try {
-            jObj = new JSONObject(json);
+            //jObj = new JSONObject(json);
+            jsonArray = new JSONArray(json);
         } catch (JSONException e) {
             Log.e("JSON Parser", "getJSONFromUrl Error parsing data " + e.toString());
         }
         // return JSON String
-        return jObj;
+        return jsonArray;
+        */
     }
 }

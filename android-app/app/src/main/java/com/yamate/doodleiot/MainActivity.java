@@ -36,6 +36,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,9 +52,8 @@ public class MainActivity extends AppCompatActivity
     private static final String mServerURL="http://192.168.50.57:8080";
     ListView lv;
 
-    ArrayList prgmName;
-    public static int[] prgmImages = {R.drawable.ic_menu_send, R.drawable.ic_menu_send, R.drawable.ic_menu_send, R.drawable.ic_menu_send, R.drawable.ic_menu_send, R.drawable.ic_menu_send, R.drawable.ic_menu_send, R.drawable.ic_menu_send, R.drawable.ic_menu_send};
-    public static String[] prgmNameList = {"Let Us C", "c++", "JAVA", "Jsp", "Microsoft .Net", "Android", "PHP", "Jquery", "JavaScript"};
+    public String[] mNameList = null;
+    public String[] mImageList = null;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity
 
 
         lv = (ListView) findViewById(R.id.listView);
-        lv.setAdapter(new CustomAdapter(this, prgmNameList, prgmImages));
+        lv.setAdapter(new CustomAdapter(this, mNameList, mImageList));
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -210,6 +210,8 @@ public class MainActivity extends AppCompatActivity
     public class JSONclientTask extends AsyncTask<String, Integer, Integer> {
         JSONclient jParser;
         JSONObject json;
+        JSONArray jarray;
+        String tempstr="";
 
         //================================================================
         //execute("http://10.0.2.2:80/TEST/TEST.aspx")\
@@ -221,7 +223,7 @@ public class MainActivity extends AppCompatActivity
                 // Creating JSON Parser instance
                 jParser = new JSONclient();
                 // getting JSON string from URL
-                json = jParser.getJSONFromUrl(param[1]);
+                jarray = jParser.getJSONFromUrl(param[1]);
             } else if (param[0].equals("select") == true) {
                 String urlParameters = "0";
                 urlParameters = "";
@@ -230,7 +232,7 @@ public class MainActivity extends AppCompatActivity
                     // Creating JSON Parser instance
                     jParser = new JSONclient();
                     //param[1] 儲存的是url網址
-                    json = jParser.makeHttpRequest(param[1], "POST", urlParameters);
+                    tempstr = jParser.makeHttpRequest(param[1], "POST", urlParameters);
                 }
             }
             return null;
@@ -239,8 +241,27 @@ public class MainActivity extends AppCompatActivity
             //此method是在doInBackground完成以後，才會呼叫的
             super.onPostExecute(result);
             //show Data
+            ArrayList<String> temp=new ArrayList();
+            ArrayList<String> imageURL=new ArrayList();
 
-            //Log.d("doodle",json.toString());
+            Log.d("doodle",jarray.toString());
+            for(int i=0;i<jarray.length();i++)
+            {
+                try {
+                    temp.add(jarray.getJSONObject(i).getString("name"));
+                    imageURL.add(mServerURL+"/images/"+i+".jpg");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            Object[] objectList =temp.toArray();
+            mNameList=Arrays.copyOf(objectList,objectList.length,String[].class);
+            objectList =imageURL.toArray();
+            mImageList=Arrays.copyOf(objectList,objectList.length,String[].class);
+            ((CustomAdapter)lv.getAdapter()).updateArraylist(mNameList,mImageList);
+
         }
         //=============================================================
     }
