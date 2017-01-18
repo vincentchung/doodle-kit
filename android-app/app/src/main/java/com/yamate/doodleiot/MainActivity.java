@@ -3,6 +3,7 @@ package com.yamate.doodleiot;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -20,20 +21,44 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import static com.yamate.doodleiot.JSONclient.json;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private ImageView thirdImage;
-
+    private static final String mServerURL="http://192.168.50.57:8080";
     ListView lv;
 
-    ArrayList prgmName;
-    public static int [] prgmImages={R.drawable.ic_menu_send,R.drawable.ic_menu_send,R.drawable.ic_menu_send,R.drawable.ic_menu_send,R.drawable.ic_menu_send,R.drawable.ic_menu_send,R.drawable.ic_menu_send,R.drawable.ic_menu_send,R.drawable.ic_menu_send};
-    public static String [] prgmNameList={"Let Us C","c++","JAVA","Jsp","Microsoft .Net","Android","PHP","Jquery","JavaScript"};
+    public String[] mNameList = null;
+    public String[] mImageList = null;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
 
     @Override
@@ -49,6 +74,8 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 Snackbar.make(view, "Reloading....", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                new JSONclientTask().execute("url",mServerURL+"/skillkit");
             }
         });
 
@@ -62,25 +89,30 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         new DownloadImageTask((ImageView) findViewById(R.id.imageViewOriginal))
-                .execute("http://192.168.50.57:8080/images/original_1483976432-9347739.jpg");
+                .execute(mServerURL+"/images/original_1483976432-9347739.jpg");
         new DownloadImageTask((ImageView) findViewById(R.id.imageViewScanResult))
                 .execute("https://vincentcwblog.files.wordpress.com/2017/01/leanring_vb_1483976717-676635.jpg?w=700&h=&crop=1");
 
-        lv=(ListView) findViewById(R.id.listView);
-        lv.setAdapter(new CustomAdapter(this, prgmNameList,prgmImages));
+
+        lv = (ListView) findViewById(R.id.listView);
+        lv.setAdapter(new CustomAdapter(this, mNameList, mImageList));
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    private Drawable loadImageFromURL(String url){
-        try{
+    private Drawable loadImageFromURL(String url) {
+        try {
             InputStream is = (InputStream) new URL(url).getContent();
             Drawable draw = Drawable.createFromStream(is, "src");
             return draw;
-        }catch (Exception e) {
+        } catch (Exception e) {
             //TODO handle error
             Log.i("loadingImg", e.toString());
             return null;
         }
     }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -137,4 +169,101 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Main Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
+    }
+
+    //http request get JSON from server side
+    public class JSONclientTask extends AsyncTask<String, Integer, Integer> {
+        JSONclient jParser;
+        JSONObject json;
+        JSONArray jarray;
+        String tempstr="";
+
+        //================================================================
+        //execute("http://10.0.2.2:80/TEST/TEST.aspx")\
+        //doInBackground(String... param)代表傳入的值可以帶入很多個參數 如:new Item2_AT().execute("1","2");
+        protected Integer doInBackground(String... param) {
+            int Judge;
+            //get Data 單存取資料
+            if (param[0].equals("url") == true) {
+                // Creating JSON Parser instance
+                jParser = new JSONclient();
+                // getting JSON string from URL
+                jarray = jParser.getJSONFromUrl(param[1]);
+            } else if (param[0].equals("select") == true) {
+                String urlParameters = "0";
+                urlParameters = "";
+                Judge = 1;
+                if (Judge == 1) {
+                    // Creating JSON Parser instance
+                    jParser = new JSONclient();
+                    //param[1] 儲存的是url網址
+                    tempstr = jParser.makeHttpRequest(param[1], "POST", urlParameters);
+                }
+            }
+            return null;
+        }
+        protected void onPostExecute(Integer result) {
+            //此method是在doInBackground完成以後，才會呼叫的
+            super.onPostExecute(result);
+            //show Data
+            ArrayList<String> temp=new ArrayList();
+            ArrayList<String> imageURL=new ArrayList();
+
+            Log.d("doodle",jarray.toString());
+            for(int i=0;i<jarray.length();i++)
+            {
+                try {
+                    temp.add(jarray.getJSONObject(i).getString("name"));
+                    imageURL.add(mServerURL+"/images/"+i+".jpg");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            Object[] objectList =temp.toArray();
+            mNameList=Arrays.copyOf(objectList,objectList.length,String[].class);
+            objectList =imageURL.toArray();
+            mImageList=Arrays.copyOf(objectList,objectList.length,String[].class);
+            ((CustomAdapter)lv.getAdapter()).updateArraylist(mNameList,mImageList);
+
+        }
+        //=============================================================
+    }
+
 }

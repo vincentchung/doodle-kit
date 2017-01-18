@@ -14,6 +14,9 @@ mCapturing = "n"
 #s: starting to monitor the button event
 mCommand="l"
 
+#define image floder
+IMAGEFOLDER="images"
+
 vb_image=list()
 vb_area=list()
 #min area
@@ -167,6 +170,10 @@ def camera_detect_vb():
 	cv2.imwrite( str,frame)
 	# Our operations on the frame come here
 
+    ts = time.time()
+    str="original"+repr(ts)+".jpg"
+    cv2.imwrite( IMAGEFOLDER+"\\"+ str,frame)
+
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	edges = cv2.Canny(gray,100,200)
 	blurred = cv2.GaussianBlur(edges, (5, 5), 0)
@@ -189,11 +196,6 @@ def camera_detect_vb():
 		# shape using only the contour
 		M = cv2.moments(c)
 
-		#if mCapturing == "d":
-		#	print cv2.contourArea(c)
-		#	shape = sd.detect_aera(c)
-		#else:
-		#	shape = sd.detect(c)
 
 		if M["m00"] > 0:
 			cX = int((M["m10"] / M["m00"]))
@@ -212,7 +214,7 @@ def camera_detect_vb():
 			s="cropped_"+repr(index)+".jpg"
 
 			print s +":"+repr(cv2.contourArea(c)) + "\n"
-			cv2.imwrite( s,cropped)
+			cv2.imwrite( IMAGEFOLDER+"\\"+s,cropped)
 			vb_image.append(cropped)
 			vb_area.append((x, y, w, h))
 			#cv2.rectangle(frame,(x,y),(x+w,y+h), (0, 255, 0), 2)
@@ -244,7 +246,7 @@ def camera_detect_vb():
 
 		ts = time.time()
 		str="leanring_vb_"+repr(ts)+".jpg"
-		cv2.imwrite( str,frame)
+		cv2.imwrite( IMAGEFOLDER+"\\"+ str,frame)
 		mCapturing="n"
 
 	if mCapturing == "d":
