@@ -5,6 +5,7 @@ import thread
 import time
 #adding spport wemo
 import subprocess
+import json
 
 #declair global valuable
 cap = cv2.VideoCapture(0) #openCV camera device
@@ -92,21 +93,25 @@ def DBupdate(obj):
     with open('data.json', 'w') as f:
         json.dump(obj, f)
 
-def wemo_switch(b):
-	if(b==0):
-		cmd='wemo switch "WeMo Switch" off'
-	else:
-		cmd='wemo switch "WeMo Switch" on'
+def execute_cmd(cmd):
+	#if(b==0):
+	#	cmd='wemo switch "WeMo Switch" off'
+	#else:
+	#	cmd='wemo switch "WeMo Switch" on'
 
 	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	for line in p.stdout.readlines():
 	    print line,
 	retval = p.wait()
 
-def event_map(button_id):
+#def event_map(button_id):
 
+bflag=0
+bpress=-1
 
 def camera_scaning():
+	global bflag
+	global bpress
 	ret, frame = cap.read()
 	index=0
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -121,7 +126,6 @@ def camera_scaning():
 
 		gray2 = cv2.cvtColor(vb_image[index], cv2.COLOR_BGR2GRAY)
 		gray2 = cv2.GaussianBlur(gray2, (21, 21), 0)
-
 		res = cv2.absdiff(cropped, gray2)
 		thresh = cv2.threshold(res, 25, 255, cv2.THRESH_BINARY)[1]
 		thresh = cv2.dilate(thresh, None, iterations=2)
@@ -129,13 +133,24 @@ def camera_scaning():
 			cv2.CHAIN_APPROX_SIMPLE)
 		cnts = cnts[0] if imutils.is_cv2() else cnts[1]
 		c = 0
+
 		for c in cnts:
 			if(cv2.contourArea(c)>1000):
-				if(index==0):
-					wemo_switch(0)
-				else:
-					wemo_switch(1)
-				print "touch!!!: " +repr(index)+":"+ repr(cv2.contourArea(c)) + "\n"
+				if(bpress!=index):
+					bpress=index
+					if(bflag==0):
+						execute_cmd(skillobjs[eventobjs[index].skillkit_id()].press())
+						bflag=1
+					else:
+						execute_cmd(skillobjs[eventobjs[index].skillkit_id()].press())
+						bflag=0
+				#execute_cmd(skillobjs[eventobjs[index].skillkit_id()].press())
+				#if(index==0):
+					#wemo_switch(0)
+				#else:
+					#wemo_switch(1)
+					print "touch!!!: " +repr(index)+":"+ repr(cv2.contourArea(c)) + "\n"
+				break
 
 		index+=1
 		#print repr area
@@ -146,6 +161,10 @@ def camera_detect_vb():
 	global mCapturing
 	# Capture frame-by-frame
 	ret, frame = cap.read()
+
+	ts = time.time()
+	str="original_"+repr(ts)+".jpg"
+	cv2.imwrite( str,frame)
 	# Our operations on the frame come here
 
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -241,26 +260,32 @@ def camera_gesture_thread( threadName, delay):
 			mCommand= "s"
 		elif mCommand == "s":
 			camera_scaning()
-			time.sleep(.5)
+			#time.sleep(.3)
 
 
 #main function
 if __name__ == "__main__":
 	print "starting..."
-    eventobjs=list()
-    #skillobjs=DBread()
-    skillobjs=DBread()
-    #myObject = skillkit( 'test1','cmd','pressing','releasing')
-    #myObject2 = skillkit( 'test2','cmd','pressing','releasing')
-    skillobjs.append(myObject)
-    skillobjs.append(myObject2)
-    #DBupdate(skillobjs)
-
-    #init event mapping table
-    eventobj1 = eventMap( 0,0)
-    eventobj2 = eventMap( 1,1)
-    eventobjs.append(eventobj1)
-    eventobjs.append(eventobj2)
+	eventobjs=list()
+	skillobjs=list()
+	#skillobjs=DBread()
+	#skillobjs=DBread()
+	myObject = skillkit( 'wemo on','cmd','wemo switch "WeMo Switch" off','releasing')
+	myObject2 = skillkit( 'wemo off','cmd','wemo switch "WeMo Switch" on','releasing')
+	skillobjs.append(myObject)
+	skillobjs.append(myObject2)
+	DBupdate(skillobjs)
+	#init event mapping table
+	eventobj1 = eventMap( 0,0)
+	eventobj2 = eventMap( 1,1)
+	eventobj3 = eventMap( 2,1)
+	eventobj4 = eventMap( 3,1)
+	eventobj5 = eventMap( 4,1)
+	eventobjs.append(eventobj1)
+	eventobjs.append(eventobj2)
+	eventobjs.append(eventobj3)
+	eventobjs.append(eventobj4)
+	eventobjs.append(eventobj5)
 
 	mCapturing="c"
 	try:
