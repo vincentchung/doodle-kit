@@ -6,6 +6,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -107,7 +109,10 @@ public class MainActivity extends AppCompatActivity
                 {
                     try{
                         receive();
-                        updateList();
+
+                        Message msg = new Message();
+                        msg.what = 1;
+                        mHandler.sendMessage(msg);
                     }
                     catch(Exception e){
                         e.printStackTrace();
@@ -223,13 +228,24 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch(msg.what){
+                case 1:
+                    updateList();
+                    break;
+            }
+        }
+    };
+
     public void updateList() {
 
         new DownloadImageTask((ImageView) findViewById(R.id.imageViewOriginal))
                 .execute(mServerURL+"/images/original_1483976432-9347739.jpg");
         new DownloadImageTask((ImageView) findViewById(R.id.imageViewScanResult))
                 .execute("https://vincentcwblog.files.wordpress.com/2017/01/leanring_vb_1483976717-676635.jpg?w=700&h=&crop=1");
-        
+
         //error: Only the original thread that created a view
         lv = (ListView) findViewById(R.id.listView);
         lv.setAdapter(new CustomAdapter(this, mNameList, mImageList));
