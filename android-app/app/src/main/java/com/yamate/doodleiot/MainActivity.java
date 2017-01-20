@@ -31,10 +31,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.MulticastSocket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -49,7 +56,9 @@ import static com.yamate.doodleiot.JSONclient.json;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String mServerURL="http://192.168.50.57:8080";
+    private static final int SERVICE_DISCOVERY_UDP_PORT=8123;
+    private static final String SERVICE_DISCOVERY_UDP_IP="225.0.0.250";
+    private static String mServerURL="http://0.0.0.0:8080";
     ListView lv;
 
     public String[] mNameList = null;
@@ -60,6 +69,7 @@ public class MainActivity extends AppCompatActivity
      */
     private GoogleApiClient client;
 
+    private DatagramSocket mDataGramSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,17 +98,23 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        new DownloadImageTask((ImageView) findViewById(R.id.imageViewOriginal))
-                .execute(mServerURL+"/images/original_1483976432-9347739.jpg");
-        new DownloadImageTask((ImageView) findViewById(R.id.imageViewScanResult))
-                .execute("https://vincentcwblog.files.wordpress.com/2017/01/leanring_vb_1483976717-676635.jpg?w=700&h=&crop=1");
-
-
-        lv = (ListView) findViewById(R.id.listView);
-        lv.setAdapter(new CustomAdapter(this, mNameList, mImageList));
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+        //start discoverying the servicing UDP message and get the IP
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                {
+                    try{
+                        receive();
+                        updateList();
+                    }
+                    catch(Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     private Drawable loadImageFromURL(String url) {
@@ -204,6 +220,48 @@ public class MainActivity extends AppCompatActivity
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
+    }
+
+
+    public void updateList() {
+
+        new DownloadImageTask((ImageView) findViewById(R.id.imageViewOriginal))
+                .execute(mServerURL+"/images/original_1483976432-9347739.jpg");
+        new DownloadImageTask((ImageView) findViewById(R.id.imageViewScanResult))
+                .execute("https://vincentcwblog.files.wordpress.com/2017/01/leanring_vb_1483976717-676635.jpg?w=700&h=&crop=1");
+        
+        //error: Only the original thread that created a view
+        lv = (ListView) findViewById(R.id.listView);
+        lv.setAdapter(new CustomAdapter(this, mNameList, mImageList));
+    }
+
+    public void receive() {
+        InetAddress ia = null;
+        byte[] buffer = new byte[65535];
+        MulticastSocket ms = null;
+        int port = SERVICE_DISCOVERY_UDP_PORT;
+        try {
+            ia = InetAddress.getByName(SERVICE_DISCOVERY_UDP_IP);
+            DatagramPacket dp = new DatagramPacket(buffer, buffer.length,ia,port);
+            ms = new MulticastSocket(port);
+            ms.joinGroup(ia);
+            Log.d("doodle","start to listening");
+            while (true) {
+                ms.receive(dp);
+                String s = new String(dp.getData(),0,dp.getLength());
+
+                Log.d("doodle",s+":"+dp.getAddress());
+                mServerURL="http:/"+dp.getAddress()+":8080";
+                return;
+            }
+
+        } catch (UnknownHostException e) {e.printStackTrace();} catch (IOException e) {e.printStackTrace(); }
+
+        try {
+            ms.leaveGroup(ia);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //http request get JSON from server side
