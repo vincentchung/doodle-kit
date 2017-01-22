@@ -63,6 +63,7 @@ def discover(timeout=None, local_ip_address=None):
   cs.bind((local_ip_address,0))
   port = cs.getsockname()[1]
   starttime = time.time()
+  print address
 
   devices = []
 
