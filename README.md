@@ -20,8 +20,8 @@ adding android app for communicating with doodle-kit device and android phone.
 " target="_blank"><img src="http://img.youtube.com/vi/9_rEW2XHS70/0.jpg" 
 alt="IMAGE ALT TEXT HERE" width="480" height="360" border="10" /></a>
 
-adding skillkit:
-1. skillkit/broadlinkRM.py
-2. skillkit/broadlinkSwitch.py
+adding skillkit: <p>
+1. skillkit/broadlinkRM.py <p>
+2. skillkit/broadlinkSwitch.py <p>
 
 using webpy to do the web server   https://github.com/webpy/webpy.git
