@@ -1,6 +1,12 @@
 import broadlink
 import sys
 
+def SwitchOn(d):
+    d.set_power(True)
+
+def SwitchOff(d):
+    d.set_power(False)
+
 def main():
     if len(sys.argv) < 2: # 1
         print "Usage:", sys.argv[0], "\n"
@@ -14,10 +20,11 @@ def main():
 
     if(c=='on'):
         print "turning on..."
-        devices[0].set_power(True)
+        SwitchOn(devices[0])
     else:
         print "turning off..."
-        devices[0].set_power(False)
+        SwitchOff(devices[0])
+
 #main function
 if __name__ == "__main__":
     main()
