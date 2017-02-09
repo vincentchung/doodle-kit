@@ -1,5 +1,7 @@
-import wemo_switch
+#import wemo_switch
 import json
+import sys,imp
+import importlib
 #from skillkit import broadlinkRM
 #from skillkit import broadlinkSwitch
 #from skillkit.broadlinkSwitch import SwitchOn
@@ -26,10 +28,9 @@ def getSkillkitlist():
     return l
 
 def launchSkill(skill):
-    out=''
-    if(skill=='wemo_switch.off'):
-        out=wemo_switch.switch_off()
-    elif(skill=='wemo_switch.on'):
-        out=wemo_switch.switch_on()
+    #print skill
+    module,fun=skill.rsplit('/')
+    objmodule = importlib.import_module('skillkit.'+module)
+    out = getattr(objmodule, fun)()
 
     return out

@@ -1,0 +1,4 @@
+[{"name": "wemo_swith",
+    "discuss" : "wemo switch controller",
+    "mode" : "W",
+    "command" : ["switch_on","switch_off"]}]
