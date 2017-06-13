@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity
 
         //MainActivity.this.startActivity(
          //       new Intent(MainActivity.this, RefreshProgressActivity.class));
-
+        findViewById(R.id.radarScan).setVisibility(View.INVISIBLE);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -293,11 +293,9 @@ public class MainActivity extends AppCompatActivity
         String tempstr="";
 
         //================================================================
-        //execute("http://10.0.2.2:80/TEST/TEST.aspx")\
-        //doInBackground(String... param)代表傳入的值可以帶入很多個參數 如:new Item2_AT().execute("1","2");
+        //execute("http://10.0.2.2:80/TEST/TEST.aspx")
         protected Integer doInBackground(String... param) {
             int Judge;
-            //get Data 單存取資料
             if (param[0].equals("url") == true) {
                 // Creating JSON Parser instance
                 jParser = new JSONclient();
@@ -310,14 +308,14 @@ public class MainActivity extends AppCompatActivity
                 if (Judge == 1) {
                     // Creating JSON Parser instance
                     jParser = new JSONclient();
-                    //param[1] 儲存的是url網址
+                    //param[1] URL address
                     tempstr = jParser.makeHttpRequest(param[1], "POST", urlParameters);
                 }
             }
             return null;
         }
         protected void onPostExecute(Integer result) {
-            //此method是在doInBackground完成以後，才會呼叫的
+            //called after doInBackground
             super.onPostExecute(result);
             //show Data
             ArrayList<String> temp=new ArrayList();
