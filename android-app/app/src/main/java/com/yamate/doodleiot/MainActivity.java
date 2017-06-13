@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity
 
         //MainActivity.this.startActivity(
          //       new Intent(MainActivity.this, RefreshProgressActivity.class));
-        findViewById(R.id.radarScan).setVisibility(View.INVISIBLE);
+        findViewById(R.id.radarScan).setVisibility(View.VISIBLE);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity
     };
 
     public void updateList() {
-
+        findViewById(R.id.radarScan).setVisibility(View.INVISIBLE);
         new DownloadImageTask((ImageView) findViewById(R.id.imageViewOriginal))
                 .execute(mServerURL+"/images/original_1483976432-9347739.jpg");
         new DownloadImageTask((ImageView) findViewById(R.id.imageViewScanResult))
