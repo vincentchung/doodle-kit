@@ -3,6 +3,8 @@ import web
 import os
 import json
 import skillkit
+from Crypto.Cipher import AES
+from binascii import b2a_hex, a2b_hex
 
 #control interface
 #list skillkit
@@ -12,6 +14,9 @@ import skillkit
 #get original full image / scan pattern of vitrulButton
 #each block image of vitrulButton
 
+#key needs to be 16 bytes
+web_key='kkkkkkkkkkkkkkkk'
+
 urls = (
     '/skillkit', 'ListSkillkit',
     '/vitrulButton', 'ListSkillkit',
@@ -20,6 +25,9 @@ urls = (
 )
 
 skillkit_dat='skillkit.json'
+
+def getwebKey():
+    return web_key 
 
 def DBread():
     # Reading data back
@@ -34,6 +42,26 @@ def DBupdate(obj):
         json.dump(obj, f)
 
 app = web.application(urls, globals())
+
+class prpcrypt():
+    def __init__(self, key):
+        self.key = key
+        self.mode = AES.MODE_CBC
+     
+    def encrypt(self, text):
+        cryptor = AES.new(self.key, self.mode, self.key)
+	length = 16
+        count = len(text)
+        add = length - (count % length)
+        text = text + ('0' * add)
+        self.ciphertext = cryptor.encrypt(text)
+        return b2a_hex(self.ciphertext)
+     
+    def decrypt(self, text):
+        cryptor = AES.new(self.key, self.mode, self.key)
+        plain_text = cryptor.decrypt(a2b_hex(text))
+        return plain_text.rstrip('\0')
+
 class images:
     def GET(self,name):
         ext = name.split(".")[-1] # Gather extension
@@ -51,8 +79,14 @@ class images:
             raise web.notfound()
 
 class ListSkillkit:
+
     def GET(self):
-	output = skillkit.getSkillkitlist()
+	pc = prpcrypt(getwebKey())
+	e = pc.encrypt(str(skillkit.getSkillkitlist()))
+	#output = e
+	#e = pc.encrypt('000000')
+	#e = skillkit.getSkillkitlist()
+	output = e
         return output
 
 class LaunchSkillkit:
@@ -63,6 +97,7 @@ class LaunchSkillkit:
 
         #output=DBread()
         return output
+
 
 if __name__ == "__main__":
     app.run()
