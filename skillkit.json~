@@ -1,8 +1,0 @@
-[{"name": "wemo_swith",
-    "discuss" : "wemo switch controller",
-    "mode" : "W",
-    "command" : ["switch_on","switch_off"]},
-    {"name": "temp_read",
-        "discuss" : "temp skillkit for reading data",
-        "mode" : "r",
-        "command" : ["data1","data2"]}]
