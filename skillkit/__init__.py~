@@ -33,7 +33,6 @@ def launchSkill(skill):
     
     if skill.find('/') > -1:
 	module,fun=skill.rsplit('/')
-	if fun == '': fun='default'
     else:
 	module = skill
 	fun = 'default'

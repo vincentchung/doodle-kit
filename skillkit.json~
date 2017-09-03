@@ -6,7 +6,3 @@
         "discuss" : "temp skillkit for reading data",
         "mode" : "r",
         "command" : ["data1","data2"]}]
-    {"name": "pc_doctor",
-        "discuss" : "temp skillkit for reading data",
-        "mode" : "r",
-        "command" : ["cpu","memory"]}]

@@ -14,7 +14,6 @@ from binascii import b2a_hex, a2b_hex
 #get original full image / scan pattern of vitrulButton
 #each block image of vitrulButton
 
-#key needs to be 16 bytes
 web_key='kkkkkkkkkkkkkkkk'
 
 urls = (

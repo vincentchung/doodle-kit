@@ -1,0 +1,16 @@
+#
+#  temp samlpe for one skillkt
+#
+#	1. the device is remotely
+#	2. the device is local connected
+#
+import psutil
+
+def default():
+    return cpu()
+
+def memory():
+    return psutil.virtual_memory()
+
+def cpu():
+    return psutil.cpu_percent()
