@@ -27,7 +27,7 @@ urls = (
 skillkit_dat='skillkit.json'
 
 def getwebKey():
-    return web_key 
+    return web_key
 
 def DBread():
     # Reading data back
@@ -47,16 +47,16 @@ class prpcrypt():
     def __init__(self, key):
         self.key = key
         self.mode = AES.MODE_CBC
-     
+
     def encrypt(self, text):
         cryptor = AES.new(self.key, self.mode, self.key)
-	length = 16
+        length = 16
         count = len(text)
         add = length - (count % length)
         text = text + ('0' * add)
         self.ciphertext = cryptor.encrypt(text)
         return b2a_hex(self.ciphertext)
-     
+
     def decrypt(self, text):
         cryptor = AES.new(self.key, self.mode, self.key)
         plain_text = cryptor.decrypt(a2b_hex(text))
@@ -81,13 +81,12 @@ class images:
 class ListSkillkit:
 
     def GET(self):
-	pc = prpcrypt(getwebKey())
-	e = pc.encrypt(str(skillkit.getSkillkitlist()))
-	#output = e
-	#e = pc.encrypt('000000')
-	#e = skillkit.getSkillkitlist()
-	output = e
-        return output
+       #disablr security feature
+	   #pc = prpcrypt(getwebKey())
+	   #e = pc.encrypt(str(skillkit.getSkillkitlist()))
+       e = skillkit.getSkillkitlist()
+       output = e
+       return output
 
 class LaunchSkillkit:
     def GET(self, user):

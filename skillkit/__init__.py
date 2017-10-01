@@ -29,15 +29,15 @@ def getSkillkitlist():
 
 def launchSkill(skill):
     #print skill
-    
-    
-    if skill.find('/') > -1:
-	module,fun=skill.rsplit('/')
-	if fun == '': fun='default'
-    else:
-	module = skill
-	fun = 'default'
 
+
+    if skill.find('/') > -1:
+	       module,fun=skill.rsplit('/')
+    else:
+	       module = skill
+	       fun = 'default'
+
+    if fun == '': fun='default'
     objmodule = importlib.import_module('skillkit.'+module)
     out = getattr(objmodule, fun)()
 
