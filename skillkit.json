@@ -6,11 +6,11 @@
     {"name": "temp_read",
         "discuss" : "temp skillkit for reading data",
         "mode" : "r",
-        "command" : ["data1","data2"]}
+        "command" : ["data1","data2"]},
     {"name": "pc_doctor",
         "discuss" : "temp skillkit for reading data",
         "mode" : "r",
-        "command" : ["cpu","memory"]}
+        "command" : ["cpu","memory"]},
     {"name": "showText",
         "discuss" : "display text..",
         "mode" : "w",
