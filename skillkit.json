@@ -14,4 +14,4 @@
     {"name": "showText",
         "discuss" : "display text..",
         "mode" : "w",
-        "command" : ["sting"]}]
+        "command" : ["string"]}]
