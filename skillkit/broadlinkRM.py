@@ -1,5 +1,9 @@
-import broadlink
 import sys
+sys.path.insert(0, './skillkit')
+import broadlink
+from broadlink import *
+
+mDevice = None
 
 def learningMode(d):
 #irdata="&p7776m"
@@ -8,8 +12,8 @@ def learningMode(d):
 
     while 1:
         d.enter_learning()
-        filename=raw_input("enter the key name:")
-        print "pressing the remote controller"
+        filename=input("enter the key name:")
+        print("pressing the remote controller")
         f = open(filename, 'wb')
         irdata= None
         while(None==irdata):
@@ -19,12 +23,12 @@ def learningMode(d):
                 irdata=d.check_data()
 
         if(None!=irdata):
-            print type(irdata)
-            print len(irdata)
+            print(type(irdata))
+            print(len(irdata))
             print (irdata)
             f.write(irdata)
             for i in range(0, len(irdata), +1):
-                print irdata[i]
+                print(irdata[i])
             f.close()
         #devices[0].send_data(irdata)
 #        d2 = bytearray(irdata)
@@ -33,32 +37,57 @@ def learningMode(d):
 
 def commandMode(d):
     while True:
-        cmd=raw_input("enter command:")
+        cmd=input("enter command:")
         r = open(cmd, 'rb')
         read_data = r.read()
         d.send_data(read_data)
         r.close()
 
 
+def commandExecute(d,cmd):
+    r = open(cmd, 'rb')
+    read_data = r.read()
+    d.send_data(read_data)
+    r.close()
+
+def commandConnectExecute(cmd):
+    connectRM()
+    r = open(cmd, 'rb')
+    read_data = r.read()
+    mDevice[0].send_data(read_data)
+    r.close()
+
+def connectRM():
+    global mDevice
+    if(mDevice == None):
+        print("connecting..")
+        mDevice = discover(timeout=15)
+        mDevice[0].auth()
+
+    print(mDevice[0].check_temperature())
+    return mDevice;
+
 def main():
     if len(sys.argv) < 2: # 1
-        print "Usage:", sys.argv[0], "\n"
-        print "   l: learning mode\n"
-        print "   c: command mode\n"
+        print("Usage:", sys.argv[0], "\n")
+        print("   l: learning mode\n")
+        print ("   c: command mode\n")
+        print ("   e: execute command\n")
         sys.exit(1)       # 2
 
     c = sys.argv[1]
-    devices = broadlink.discover(timeout=15)
-    devices[0].auth()
-
-    print devices[0].check_temperature()
+    connectRM()
+    print(mDevice[0].check_temperature())
 
     if(c=='l'):
-        print "learning mode..."
-        learningMode(devices[0])
-    else:
-        print "command mode..."
-        commandMode(devices[0])
+        print("learning mode...")
+        learningMode(mDevice[0])
+    elif(c=='c'):
+        print("command mode...")
+        commandMode(mDevice[0])
+    elif(c=='e'):
+        print("execute command...")
+        commandExecute(mDevice[0],sys.argv[2])
 
 #main function
 if __name__ == "__main__":
