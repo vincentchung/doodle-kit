@@ -28,9 +28,16 @@ def getSkillkitlist():
     return l
 
 def launchSkill(skill):
-    #print skill
-    module,fun=skill.rsplit('/')
-    objmodule = importlib.import_module('skillkit.'+module)
-    out = getattr(objmodule, fun)()
+    print(skill)
+    #module,fun=skill.rsplit('/')
+    temp=skill.rsplit('/')
+    if(len(temp)>2):
+      module=temp[0]
+      fun=temp[1]
+      objmodule = importlib.import_module('skillkit.'+module)
+      out = getattr(objmodule, fun)(temp[2])
+    else:
+      objmodule = importlib.import_module('skillkit.'+module)
+      out = getattr(objmodule, fun)()
 
     return out
