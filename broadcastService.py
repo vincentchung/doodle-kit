@@ -39,7 +39,7 @@ def sender(group):
 
     while True:
         data = "doodle-IoT"
-        s.sendto(data + '\0', (addrinfo[4][0], MYPORT))
+        s.sendto((data + '\0').encode(), (addrinfo[4][0], MYPORT))
         time.sleep(1)
 
 
