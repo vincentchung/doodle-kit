@@ -23,6 +23,7 @@
         app:menu="@menu/activity_main_drawer" />
 
     <com.yamate.doodleiot.RadarScanView
+        android:id="@+id/radarScan"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></com.yamate.doodleiot.RadarScanView>
 

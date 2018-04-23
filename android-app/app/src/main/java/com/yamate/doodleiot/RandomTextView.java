@@ -16,9 +16,6 @@ import java.util.Random;
 import java.util.Vector;
 
 
-/**
- * Created by 郭攀峰 on 2015/9/17.
- */
 public class RandomTextView extends FrameLayout
     implements
         ViewTreeObserver.OnGlobalLayoutListener
@@ -85,7 +82,7 @@ public class RandomTextView extends FrameLayout
     }
 
     /**
-     * 添加RippleOutView的内容
+     * adding content to RippleOutView
      * 
      * @param keyword
      */
@@ -138,10 +135,9 @@ public class RandomTextView extends FrameLayout
 
         if (width > 0 && height > 0 && vecKeywords != null && vecKeywords.size() > 0)
         {
-            //找到中心点
             int xCenter = width >> 1;
             int yCenter = height >> 1;
-            //关键字的个数。
+
             int size = vecKeywords.size();
             int xItem = width / (size + 1);
             int yItem = height / (size + 1);
@@ -149,7 +145,7 @@ public class RandomTextView extends FrameLayout
             LinkedList<Integer> listY = new LinkedList<>();
             for (int i = 0; i < size; i++)
             {
-                // 准备随机候选数，分别对应x/y轴位置
+                // random pick x/y postion!!
                 listX.add(i * xItem);
                 listY.add(i * yItem + (yItem >> 2));
             }
@@ -159,13 +155,13 @@ public class RandomTextView extends FrameLayout
             for (int i = 0; i < size; i++)
             {
                 String keyword = vecKeywords.get(i);
-                // 随机颜色  
+                // random color
                 int ranColor = fontColor;
-                // 随机位置，糙值  
+                // random X/Y
                 int xy[] = randomXY(random, listX, listY, xItem);
 
                 int txtSize = TEXT_SIZE;
-                // 实例化RippleOutView  
+                // RippleOutView
                 final RippleView txt = new RippleView(getContext());
                 if (mode == RippleView.MODE_IN)
                 {

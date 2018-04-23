@@ -14,10 +14,6 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 
-
-/**
- * Created by 郭攀峰 on 2015/8/19.
- */
 public class RadarScanView extends View
 {
     private static final int DEFAULT_WIDTH = 300;
@@ -99,8 +95,8 @@ public class RadarScanView extends View
         }
 
         initPaint();
-        //得到当前屏幕的像素宽高
 
+        //for getting current screen size
         defaultWidth = dip2px(context, DEFAULT_WIDTH);
         defaultHeight = dip2px(context, DEFAULT_HEIGHT);
 
@@ -165,13 +161,13 @@ public class RadarScanView extends View
     {
         super.onDraw(canvas);
 
-        //分别绘制四个圆
+        //for drawing 4 dim
         canvas.drawCircle(centerX, centerY, radarRadius / 7, mPaintCircle);
         canvas.drawCircle(centerX, centerY, radarRadius / 4, mPaintCircle);
         canvas.drawCircle(centerX, centerY, radarRadius / 3, mPaintCircle);
         canvas.drawCircle(centerX, centerY, 3 * radarRadius / 7, mPaintCircle);
 
-        //设置颜色渐变从透明到不透明
+        //fading color to transparent
         //        Shader shader = new SweepGradient(centerX, centerY, Color.TRANSPARENT, tailColor);
         Shader shader = new SweepGradient(centerX, centerY, Color.parseColor("#00A8D7A7"),
             Color.parseColor("#ffA8D7A7"));
