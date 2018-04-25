@@ -10,7 +10,7 @@ def sensorupdate(d):
     data={"name":a[0],"data1":a[1]}
 
 
-    mongoDB.adddata({"name":a[0],"data"+str(i):a[1i]})
+    mongoDB.adddata({"name":a[0],"data"+str(i):a[1]})
     return "2"
 
 def sensorupdate1():
