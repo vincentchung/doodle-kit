@@ -31,9 +31,9 @@ def launchSkill(skill):
     print(skill)
     #module,fun=skill.rsplit('/')
     temp=skill.rsplit('/')
+    module=temp[0]
+    fun=temp[1]
     if(len(temp)>2):
-      module=temp[0]
-      fun=temp[1]
       objmodule = importlib.import_module('skillkit.'+module)
       out = getattr(objmodule, fun)(temp[2])
     else:
