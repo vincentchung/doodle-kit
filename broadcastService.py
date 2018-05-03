@@ -19,7 +19,7 @@ import struct
 import socket
 import sys
 
-def main():
+def start_broadcast_service():
     group = MYGROUP_6 if "-6" in sys.argv[1:] else MYGROUP_4
 
     sender(group)
@@ -46,4 +46,4 @@ def sender(group):
 
 
 if __name__ == '__main__':
-    main()
+    start_broadcast_service()

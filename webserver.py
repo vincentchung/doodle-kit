@@ -93,6 +93,8 @@ class LaunchSkillkit:
      #output=DBread()
      return output
 
+def start_web_service():
+   app.run()
 
 if __name__ == "__main__":
-   app.run()
+   start_service()
