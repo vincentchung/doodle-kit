@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final int SERVICE_DISCOVERY_UDP_PORT=8123;
     private static final String SERVICE_DISCOVERY_UDP_IP="225.0.0.250";
-    private static String mServerURL="http://0.0.0.0:8080";
+    private static String mServerURL="http://10.0.1.4:8080";
     ListView lv;
 
     public String[] mNameList = null;
