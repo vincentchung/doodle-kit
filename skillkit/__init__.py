@@ -2,6 +2,7 @@
 import json
 import sys,imp
 import importlib
+from skillkitUtil import *
 #from skillkit import broadlinkRM
 #from skillkit import broadlinkSwitch
 #from skillkit.broadlinkSwitch import SwitchOn
@@ -36,6 +37,8 @@ def launchSkill(skill):
       temp=skill.rsplit('/')
       module=temp[0]
       fun=temp[1]
+      if(checkSkillkik(module,fun)=="no"):
+        return "no"
       if(len(temp)>2):
         objmodule = importlib.import_module('skillkit.'+module)
         out = getattr(objmodule, fun)(temp[2])
