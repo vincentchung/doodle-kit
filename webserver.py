@@ -97,4 +97,4 @@ def start_web_service():
    app.run()
 
 if __name__ == "__main__":
-   start_service()
+   start_web_service()
