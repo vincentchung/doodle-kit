@@ -3,6 +3,7 @@ import json
 import sys,imp
 import importlib
 from skillkitUtil import *
+from doodle_talk import *
 #from skillkit import broadlinkRM
 #from skillkit import broadlinkSwitch
 #from skillkit.broadlinkSwitch import SwitchOn
@@ -37,8 +38,12 @@ def launchSkill(skill):
       temp=skill.rsplit('/')
       module=temp[0]
       fun=temp[1]
-      if(checkSkillkik(module,fun)=="no"):
+      chk=checkSkillkik(module,fun)
+      if(chk=="no"):
         return "no"
+      if(chk!="local"):
+        applySkillkit("10.0.1.14",module,fun,"")
+        return "not local"
       if(len(temp)>2):
         objmodule = importlib.import_module('skillkit.'+module)
         out = getattr(objmodule, fun)(temp[2])

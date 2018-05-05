@@ -8,7 +8,7 @@
         "discuss" : "temp skillkit for reading data",
         "mode" : "r",
         "command" : ["data1","data2"],
-        "devices":"local"},
+        "devices":"device1"},
     {"name": "pc_doctor",
         "discuss" : "temp skillkit for reading data",
         "mode" : "r",
@@ -18,4 +18,9 @@
         "discuss" : "display text..",
         "mode" : "w",
         "command" : ["string"],
+        "devices":"local"},
+    {"name": "dyson_cool",
+        "discuss" : "display text..",
+        "mode" : "w",
+        "command" : ["powerOn","spinOn","fanAirDec","fanAirInc"],
         "devices":"local"}]

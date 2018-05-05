@@ -23,7 +23,10 @@ def checkSkillkik(name,cmd):
         for j in range(len(json_data[i]["command"])):
           print(json_data[i]["command"][j])
           if(json_data[i]["command"][j]==cmd):
-            return "yes"
+            if(json_data[i]["devices"]=="local"):
+              return "yes"
+            else:
+              return json_data[i]["devices"]
   return "no"
 
 if __name__ == "__main__":
