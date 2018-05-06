@@ -20,6 +20,17 @@ if not os.path.isdir(devices):
 #conn.request("GET", "/skillkit/dyson_cool/spinOn")
 #r1 = conn.getresponse()
 #print(r1.status, r1.reason)
+file="devices.json"
+
+def getDeviceIP(device_name):
+  with open(file, "r") as f:
+    data=f.read()
+    json_data = json.loads(str(data)[0:len(str(data))])
+    for i in range(len(json_data)):
+      if(json_data[i]["name"]==device_name):
+        return json_data[i]["IP"]
+
+  return "none"
 
 def addDeivce(d):
   temp=devices+"\\"+d
@@ -36,6 +47,3 @@ def applySkillkit(deviceIP,module,func,param):
 
   r1 = conn.getresponse()
   print(r1.status, r1.reason)
-
-
-applySkillkit("localhost","dyson_cool","spinOn","")
