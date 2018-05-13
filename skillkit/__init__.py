@@ -39,16 +39,17 @@ def launchSkill(skill):
       module=temp[0]
       fun=temp[1]
       chk=checkSkillkik(module,fun)
-      if(chk=="no"):
-        return "no"
-      if(chk!="local"):
+      if(chk=='yes'):
+          if(len(temp)>2):
+            objmodule = importlib.import_module('skillkit.'+module)
+            out = getattr(objmodule, fun)(temp[2])
+          else:
+            objmodule = importlib.import_module('skillkit.'+module)
+            out = getattr(objmodule, fun)()
+      elif(chk=='no'):
+              return "no"
+      else:
         applySkillkit("10.0.1.14",module,fun,"")
         return "not local"
-      if(len(temp)>2):
-        objmodule = importlib.import_module('skillkit.'+module)
-        out = getattr(objmodule, fun)(temp[2])
-      else:
-        objmodule = importlib.import_module('skillkit.'+module)
-        out = getattr(objmodule, fun)()
 
     return out
