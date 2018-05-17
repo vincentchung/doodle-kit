@@ -57,6 +57,10 @@ def commandConnectExecute(cmd):
     mDevice[0].send_data(read_data)
     r.close()
 
+def getTemperature():
+    connectRM()
+    return mDevice[0].check_temperature()
+
 def connectRM():
     global mDevice
     if(mDevice == None):
@@ -64,8 +68,9 @@ def connectRM():
         mDevice = discover(timeout=15)
         mDevice[0].auth()
 
-    print(mDevice[0].check_temperature())
+    #print(mDevice[0].check_temperature())
     return mDevice;
+
 
 def main():
     if len(sys.argv) < 2: # 1
