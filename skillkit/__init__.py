@@ -47,9 +47,10 @@ def launchSkill(skill):
             objmodule = importlib.import_module('skillkit.'+module)
             out = getattr(objmodule, fun)()
       elif(chk=='no'):
-              return "no"
+          return "no"
       else:
-        applySkillkit("10.0.1.14",module,fun,"")
-        return "not local"
+          device_name=chk
+          applySkillkit(getDeviceIP(device_name),module,fun,"")
+          return "not local"
 
     return out
