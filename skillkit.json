@@ -27,7 +27,7 @@
     {"name": "Heran_AC",
         "discuss" : "Irda controlling Heran AC",
         "mode" : "w",
-        "command" : ["powerOn","temperatureInc","temperatureDec"],
+        "command" : ["powerOn","temperatureInc","temperatureDec","fanAirInc","fanAirDec","sleepMode"],
         "devices":"local"},
     {"name": "temperature_read",
        "discuss" : "broadlinkRM get temperature",
