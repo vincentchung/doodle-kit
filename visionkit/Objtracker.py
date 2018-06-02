@@ -14,6 +14,9 @@ firstFrame = None
 objcount=0
 faceCurrentNum=0
 faceRects=None
+start_recording=0
+no_tricker_counter=0
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
 class FaceDetector:
 	def __init__(self, faceCascadePath):
@@ -29,6 +32,7 @@ class FaceDetector:
 		# return the rectangles representing bounding
 		# boxes around the faces
 		return rects
+
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -95,9 +99,16 @@ while True:
 
 	#cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 1)
 
+	if(start_recording==1):
+		out.write(frame)
 
 	#cv2.putText(frame, (str(cv2.contourArea(c))), (x, y),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
 	if objcount != area_counter:
+		no_tricker_counter=0
+		if(start_recording==0):
+			start_recording=1
+			out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
+
 		print("trigger!!:"+str(objcount))
 		firstFrame=gray
 		objcount=area_counter
@@ -115,10 +126,13 @@ while True:
 		# loop over the faces and draw a rectangle around each
 		#for (fx, fy, w, h) in faceRects:
 		#	cv2.rectangle(frame, (x+fx, y+fy), (x+fx + w, y+fy + h), (255, 0, 0), 1)
+	else:
+		no_tricker_counter+=1
 
 	if(faceCurrentNum>0):
 		for (fx, fy, w, h) in faceRects:
 			cv2.rectangle(frame, (fx, fy), (fx + w, fy + h), (255, 0, 0), 1)
+
 
 	cv2.putText(frame, ("face:"+str(faceCurrentNum)), (0, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
 # show the frame and the binary image
@@ -133,6 +147,9 @@ while True:
 	# comment out this line
 	time.sleep(0.025)
 
+	if(no_tricker_counter>30 and start_recording==1):
+		start_recording=0
+		out.release()
 	# if the 'q' key is pressed, stop the loop
 	if cv2.waitKey(1) & 0xFF == ord("q"):
 		break
