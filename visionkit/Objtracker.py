@@ -7,6 +7,7 @@ import numpy as np
 import argparse
 import time
 import cv2
+import datetime
 
 #config
 minarea=80
@@ -107,7 +108,7 @@ while True:
 		no_tricker_counter=0
 		if(start_recording==0):
 			start_recording=1
-			out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
+			out = cv2.VideoWriter(str(int(time.time()))+'.avi',fourcc, 20.0, (640,480))
 
 		print("trigger!!:"+str(objcount))
 		firstFrame=gray
