@@ -2,8 +2,7 @@
 # python track.py --video video/iphonecase.mov
 
 # import the necessary packages
-import numpy as np
-#from pyimagesearch.facedetector import FaceDetector
+#import numpy as np
 import argparse
 import time
 import cv2
@@ -11,6 +10,13 @@ import datetime
 
 #config
 minarea=80
+#the delay of each frame
+frame_delay=0.025
+#the define of "silent" time to stop recording
+#the counting frame for no object moving
+silentLimit=30
+
+#global value
 firstFrame = None
 objcount=0
 faceCurrentNum=0
@@ -18,6 +24,8 @@ faceRects=None
 start_recording=0
 no_tricker_counter=0
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
+face_cascade="haarcascade_frontalface_default.xml"
+recording_fps=20.0
 
 class FaceDetector:
 	def __init__(self, faceCascadePath):
@@ -37,14 +45,17 @@ class FaceDetector:
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-f", "--face", required = True,
+ap.add_argument("-f", "--face",
 	help = "path to where the face cascade resides")
 
 ap.add_argument("-v", "--video",
 	help = "path to the (optional) video file")
 args = vars(ap.parse_args())
 
-fd = FaceDetector(args["face"])
+if args.get("face", False):
+	face_cascade = args["face"]
+
+fd = FaceDetector(face_cascade)
 
 if not args.get("video", False):
 	camera = cv2.VideoCapture(0)
@@ -60,14 +71,7 @@ while True:
 	# video
 	if not grabbed:
 		break
-    #tracker implment
-	#hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-	#dst = cv2.calcBackProject([hsv],[0],roi_hist,[0,180],1)
-	#ret, track_window = cv2.meanShift(dst, track_window, term_crit)
-	#x,y,w,h = track_window
-	#cv2.rectangle(frame, (x,y), (x+w,y+h), 255,2)
-	# determine which pixels fall within the blue boundaries
-	# and then blur the binary image
+
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	gray = cv2.GaussianBlur(gray, (3, 3), 0)
 
@@ -98,8 +102,6 @@ while True:
 		if(cv2.contourArea(c)>largestarea):
 			(x,y,w,h) = cv2.boundingRect(c)
 
-	#cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 1)
-
 	if(start_recording==1):
 		out.write(frame)
 
@@ -108,16 +110,20 @@ while True:
 		no_tricker_counter=0
 		if(start_recording==0):
 			start_recording=1
-			out = cv2.VideoWriter(str(int(time.time()))+'.avi',fourcc, 20.0, (640,480))
+			#fps = camera.get(cv2.CAP_PROP_FPS) <-return 0.0
+			size = (int(camera.get(cv2.CAP_PROP_FRAME_WIDTH)), int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+			#print("fps:"+str(fps)+",size:"+str(size))
+			#out = cv2.VideoWriter(str(int(time.time()))+'.avi',fourcc, 20.0, (640,480))
+			out = cv2.VideoWriter(str(int(time.time()))+'.avi',fourcc, recording_fps, size)
+			print("trigger!!:"+str(objcount))
 
-		print("trigger!!:"+str(objcount))
 		firstFrame=gray
 		objcount=area_counter
         # find faces in the image
 			#faceframe=frame[y:y + h,x:x + w]
 		faceframe=gray
-		faceRects = fd.detect(faceframe, scaleFactor = 1.1, minNeighbors = 5,
-		minSize = (30, 30))
+		#faceRects = fd.detect(faceframe, scaleFactor = 1.1, minNeighbors = 5,minSize = (30, 30))
+		faceRects = fd.detect(faceframe)
 
 		if(len(faceRects)>0):
 			print("I found {} face(s)".format(len(faceRects)))
@@ -138,17 +144,11 @@ while True:
 	cv2.putText(frame, ("face:"+str(faceCurrentNum)), (0, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
 # show the frame and the binary image
 	cv2.imshow("Tracking", frame)
-	cv2.imshow("Binary", thresh)
+#	cv2.imshow("Binary", thresh)
 
-	# if your machine is fast, it may display the frames in
-	# what appears to be 'fast forward' since more than 32
-	# frames per second are being displayed -- a simple hack
-	# is just to sleep for a tiny bit in between frames;
-	# however, if your computer is slow, you probably want to
-	# comment out this line
-	time.sleep(0.025)
+	time.sleep(frame_delay)
 
-	if(no_tricker_counter>30 and start_recording==1):
+	if(no_tricker_counter>silentLimit and start_recording==1):
 		start_recording=0
 		out.release()
 	# if the 'q' key is pressed, stop the loop
